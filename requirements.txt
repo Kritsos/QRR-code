@@ -1,0 +1,7 @@
+flwr
+torch
+torchvision
+tensorly
+ray
+matplotlib
+pyqt6
