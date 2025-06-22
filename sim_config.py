@@ -12,7 +12,7 @@ from torchvision import datasets, transforms
 NUM_CLIENTS = 10
 # number of federated learning iterations
 NUM_ROUNDS = 1
-# how many bits to use when quantizing the gradients/model weights
+# how many bits to use when quantizing the gradients
 NUM_BITS = 8
 # number of weights differences to consider for the threshold calculation of eq(9)
 D = 10
@@ -20,7 +20,7 @@ D = 10
 XI = np.array([1.0 / D for _ in range(D)])
 # maximum number of consecutive rounds that a client can skip uploading the gradient
 TIMER_MAX = 50
-# rank reduction percentage
+# rank reduction percentage (should be an iterable, with a value for each client)
 P1 = [0.1] * NUM_CLIENTS
 P2 = [0.2] * NUM_CLIENTS
 P3 = [0.3] * NUM_CLIENTS
@@ -28,7 +28,7 @@ P_MIXED = np.linspace(0.1, 0.3, NUM_CLIENTS)
 # learning rate
 LEARNING_RATE = 0.001
 # batch size
-BATCH_SIZE = 500
+BATCH_SIZE = 512
 # device on which to train
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -75,12 +75,18 @@ TESTLOADER = DataLoader(cifar10_testset, batch_size=BATCH_SIZE, shuffle=False)
 
 ######## DO NOT CHANGE ########
 
+# Defining these variables here ensures that when the main run_simulation.py file spawns client actors using Ray
+# these variables will live inside that actor and the variables state will be updated across training iterations,
+# instead of being reinitialized at each iteration
 SLAQ_CLIENT_STORAGE = [ClientStorage(D) for _ in range(NUM_CLIENTS)]
 TWO_WAY_SLAQ_CLIENT_STORAGE = [ClientStorage(D) for _ in range(NUM_CLIENTS)]
 QRR1_STORAGE = [ClientStorage(D) for _ in range(NUM_CLIENTS)]
 QRR2_STORAGE = [ClientStorage(D) for _ in range(NUM_CLIENTS)]
 QRR3_STORAGE = [ClientStorage(D) for _ in range(NUM_CLIENTS)]
 
+
+# The issue with the client storage objects is not encountered with these variables since the server runs in the main
+# python process and not in a separate Ray actor, so they could as well be declared in run_simulation.py
 SGD_RESULTS_LOG = ResultsLog()
 SLAQ_RESULTS_LOG = ResultsLog()
 TWO_WAY_SLAQ_RESULTS_LOG = ResultsLog()

@@ -14,6 +14,9 @@ from sim_config import DEVICE
 
 tensorly.set_backend('pytorch')
 
+######## CHOOSE NETWORK ARCHITECTURE ########
+# The class should always be named Net
+
 # ## Convolutional Network
 # class Net(nn.Module):
 #     def __init__(self) -> None:
@@ -63,6 +66,7 @@ tensorly.set_backend('pytorch')
 #         return x
 
 
+### VGG-LIKE
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -112,6 +116,8 @@ class Net(nn.Module):
         x = self.dropout_fc(x)
         x = self.fc2(x)
         return x
+    
+#############################################
     
 
 def set_parameters(net, parameters):
